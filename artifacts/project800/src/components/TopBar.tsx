@@ -34,7 +34,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 export function TopBar() {
-  const { months, budget, campaigns, events, hoardings } = useAppData();
+  const { months, budget, campaigns, events, hoardings, totalBudget } = useAppData();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -46,6 +46,7 @@ export function TopBar() {
         campaigns,
         events,
         hoardings,
+        totalBudget,
         generatedAt: new Date().toISOString(),
       });
       navigator.clipboard.writeText(url).then(() => {
@@ -65,7 +66,7 @@ export function TopBar() {
     try {
       switch (type) {
         case "full":
-          exportFullPlan(months, budget, campaigns, events, hoardings);
+          exportFullPlan(months, budget, campaigns, events, hoardings, totalBudget);
           toast({ title: "PDF exported", description: "Full marketing plan downloaded." });
           break;
         case "monthly":
@@ -73,7 +74,7 @@ export function TopBar() {
           toast({ title: "PDF exported", description: "Monthly plan tracker downloaded." });
           break;
         case "budget":
-          exportBudget(budget);
+          exportBudget(budget, totalBudget);
           toast({ title: "PDF exported", description: "Budget report downloaded." });
           break;
         case "campaigns":

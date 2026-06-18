@@ -80,7 +80,8 @@ export function exportFullPlan(
   budget: BudgetItem[],
   campaigns: Campaign[],
   events: EventItem[],
-  hoardings: Hoarding[]
+  hoardings: Hoarding[],
+  totalBudget: number
 ) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -128,7 +129,7 @@ export function exportFullPlan(
   doc.setTextColor(100, 120, 140);
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
-  doc.text(`Total Budget: INR 40,00,000  |  Duration: 11 months  |  Campaigns: ${campaigns.length}  |  Events: ${events.length}`, pageWidth / 2, 120, { align: "center" });
+  doc.text(`Total Budget: ${formatINR(totalBudget)}  |  Duration: 11 months  |  Campaigns: ${campaigns.length}  |  Events: ${events.length}`, pageWidth / 2, 120, { align: "center" });
 
   const dateStr = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
   doc.text(`Report generated on ${dateStr}`, pageWidth / 2, 128, { align: "center" });
@@ -169,7 +170,7 @@ export function exportFullPlan(
   });
 
   doc.addPage();
-  addPageHeader(doc, "Budget Allocation", `Total Budget: ${formatINR(40000000)} | ${budget.length} line items`);
+  addPageHeader(doc, "Budget Allocation", `Total Budget: ${formatINR(totalBudget)} | ${budget.length} line items`);
 
   const totalBudgetSpend = budget.reduce((s, b) => s + b.actual, 0);
   autoTable(doc, {
@@ -180,7 +181,7 @@ export function exportFullPlan(
       const pct = b.planned > 0 ? ((b.actual / b.planned) * 100).toFixed(1) + "%" : "0%";
       return [i + 1, b.channel, formatINR(b.planned), b.actual ? formatINR(b.actual) : "–", b.actual ? formatINR(variance) : "–", b.actual ? pct : "–"];
     }),
-    foot: [["", "TOTAL", formatINR(40000000), totalBudgetSpend ? formatINR(totalBudgetSpend) : "–", totalBudgetSpend ? formatINR(40000000 - totalBudgetSpend) : "–", totalBudgetSpend ? ((totalBudgetSpend / 40000000) * 100).toFixed(1) + "%" : "0%"]],
+    foot: [["", "TOTAL", formatINR(totalBudget), totalBudgetSpend ? formatINR(totalBudgetSpend) : "–", totalBudgetSpend ? formatINR(totalBudget - totalBudgetSpend) : "–", totalBudgetSpend ? ((totalBudgetSpend / totalBudget) * 100).toFixed(1) + "%" : "0%"]],
     headStyles: { fillColor: TEAL, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 8 },
     footStyles: { fillColor: DARK, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 8 },
     bodyStyles: { fontSize: 8 },
@@ -279,12 +280,12 @@ export function exportMonthlyPlan(months: MonthData[]) {
   doc.save(`Project800_MonthlyPlan_${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
-export function exportBudget(budget: BudgetItem[]) {
+export function exportBudget(budget: BudgetItem[], totalBudget: number) {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  addPageHeader(doc, "Budget Report", `Total Budget: INR 40,00,000 | ${budget.length} channels`);
+  addPageHeader(doc, "Budget Report", `Total Budget: ${formatINR(totalBudget)} | ${budget.length} channels`);
 
   const totalSpent = budget.reduce((s, b) => s + b.actual, 0);
-  const totalPlanned = 4000000;
+  const totalPlanned = totalBudget;
 
   doc.setFillColor(...TEAL);
   doc.roundedRect(14, 47, 55, 18, 2, 2, "F");

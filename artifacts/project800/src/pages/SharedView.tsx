@@ -28,14 +28,13 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
 }
 
 export default function SharedView({ snapshot }: Props) {
-  const { months, budget, campaigns, events, hoardings, generatedAt } = snapshot;
+  const { months, budget, campaigns, events, hoardings, totalBudget, generatedAt } = snapshot;
 
   const totalActualAdm = months.reduce((s, m) => s + m.actualAdm, 0);
   const totalPlanAdm = months.reduce((s, m) => s + m.planAdm, 0);
   const totalActualSpend = months.reduce((s, m) => s + m.actualSpend, 0);
   const totalPlanSpend = months.reduce((s, m) => s + m.planSpend, 0);
   const totalActualEnq = months.reduce((s, m) => s + m.actualEnq, 0);
-  const totalBudget = 4000000;
 
   const generatedDate = new Date(generatedAt).toLocaleString("en-IN", {
     day: "2-digit",

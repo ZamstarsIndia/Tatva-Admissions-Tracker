@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { defaultMonths, defaultBudget, defaultCampaigns, defaultEvents, defaultHoardings, MonthData, BudgetItem, Campaign, EventItem, Hoarding, Note } from '../data/defaults';
 
+export const DEFAULT_TOTAL_BUDGET = 4000000;
+
 const KEYS = {
   MONTHS: 'p800_months',
   BUDGET: 'p800_budget',
@@ -8,6 +10,7 @@ const KEYS = {
   EVENTS: 'p800_events',
   HOARDINGS: 'p800_hoardings',
   NOTES: 'p800_notes',
+  TOTAL_BUDGET: 'p800_total_budget',
 };
 
 function getStorage<T>(key: string, defaultValue: T): T {
@@ -53,6 +56,7 @@ export function useAppData() {
   const [events, setEventsState] = useState<EventItem[]>(() => getStorage(KEYS.EVENTS, defaultEvents));
   const [hoardings, setHoardingsState] = useState<Hoarding[]>(() => getStorage(KEYS.HOARDINGS, defaultHoardings));
   const [notes, setNotesState] = useState<Note[]>(() => getStorage(KEYS.NOTES, []));
+  const [totalBudget, setTotalBudgetState] = useState<number>(() => getStorage(KEYS.TOTAL_BUDGET, DEFAULT_TOTAL_BUDGET));
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -62,6 +66,7 @@ export function useAppData() {
       setEventsState(getStorage(KEYS.EVENTS, defaultEvents));
       setHoardingsState(getStorage(KEYS.HOARDINGS, defaultHoardings));
       setNotesState(getStorage(KEYS.NOTES, []));
+      setTotalBudgetState(getStorage(KEYS.TOTAL_BUDGET, DEFAULT_TOTAL_BUDGET));
     };
     window.addEventListener('actualsUpdated', handleUpdate);
     return () => window.removeEventListener('actualsUpdated', handleUpdate);
@@ -107,12 +112,19 @@ export function useAppData() {
     notifyUpdate();
   };
 
+  const setTotalBudget = (amount: number) => {
+    setTotalBudgetState(amount);
+    setStorage(KEYS.TOTAL_BUDGET, amount);
+    notifyUpdate();
+  };
+
   return {
     months, setMonths,
     budget, setBudget,
     campaigns, setCampaigns,
     events, setEvents,
     hoardings, setHoardings,
-    notes, setNotes
+    notes, setNotes,
+    totalBudget, setTotalBudget,
   };
 }

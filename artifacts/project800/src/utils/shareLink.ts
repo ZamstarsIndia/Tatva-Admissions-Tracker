@@ -6,6 +6,7 @@ export type SnapshotData = {
   campaigns: Campaign[];
   events: EventItem[];
   hoardings: Hoarding[];
+  totalBudget: number;
   generatedAt: string;
 };
 

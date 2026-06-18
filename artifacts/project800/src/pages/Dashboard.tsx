@@ -29,10 +29,9 @@ ChartJS.register(
 );
 
 export default function Dashboard() {
-  const { months, budget } = useAppData();
+  const { months, budget, totalBudget } = useAppData();
 
   const totalTarget = 800;
-  const totalBudget = 4000000;
   
   const admissionsSoFar = months.reduce((sum, m) => sum + (Number(m.actualAdm) || 0), 0);
   const remainingSeats = totalTarget - admissionsSoFar;
