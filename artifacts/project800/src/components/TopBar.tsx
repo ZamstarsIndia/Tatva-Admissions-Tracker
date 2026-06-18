@@ -2,7 +2,9 @@ import { resetData } from "@/hooks/useAppData";
 import { useAppData } from "@/hooks/useAppData";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { RotateCcw, FileDown, ChevronDown } from "lucide-react";
+import { RotateCcw, FileDown, ChevronDown, Share2, Copy, Check } from "lucide-react";
+import { useState } from "react";
+import { buildShareUrl } from "@/utils/shareLink";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,6 +36,30 @@ import { useToast } from "@/hooks/use-toast";
 export function TopBar() {
   const { months, budget, campaigns, events, hoardings } = useAppData();
   const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+
+  function handleShare() {
+    try {
+      const url = buildShareUrl({
+        months,
+        budget,
+        campaigns,
+        events,
+        hoardings,
+        generatedAt: new Date().toISOString(),
+      });
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true);
+        toast({
+          title: "Link copied!",
+          description: "Share this link for a read-only view of your current plan.",
+        });
+        setTimeout(() => setCopied(false), 2500);
+      });
+    } catch {
+      toast({ title: "Share failed", description: "Could not generate link.", variant: "destructive" });
+    }
+  }
 
   function handleExport(type: string) {
     try {
@@ -75,6 +101,21 @@ export function TopBar() {
       </div>
 
       <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-slate-600 border-slate-200 hover:bg-slate-50"
+          onClick={handleShare}
+          data-testid="button-share"
+        >
+          {copied ? (
+            <Check className="w-4 h-4 mr-2 text-green-600" />
+          ) : (
+            <Share2 className="w-4 h-4 mr-2" />
+          )}
+          {copied ? "Copied!" : "Share"}
+        </Button>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
