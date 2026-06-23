@@ -1,3 +1,17 @@
+export type DayEntry = {
+  day: number;
+  admissions: number;
+  enquiries: number;
+  spend: number;
+  note: string;
+};
+
+export type WeekEntry = {
+  monthId: string;
+  week: number;
+  days: DayEntry[];
+};
+
 export type MonthData = {
   id: string; // e.g., '2026-07'
   month: string;
